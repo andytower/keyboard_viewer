@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 __author__ = 'tsa'
+__author__ = 'andytower'
 
 import queue
 from tkinter import *
@@ -62,7 +64,7 @@ class GuiManager:
 
             self.gui_rows[int(row_index)].pack()
         self.reconfigure_text_on_buttons(config, shift_pressed=0,
-                lang=0)
+                lang=1)
 
         if len(self.config.colored_keys) != 0:
             for button_index in self.config.colored_keys:
@@ -72,8 +74,8 @@ class GuiManager:
         master.update_idletasks()
 
         self.default_geometry = self.parse_geometry(master.geometry())
-        master.bind('<Enter>', self.mouse_entered)
-        master.bind('<Motion>', self.mouse_entered)
+        # master.bind('<Enter>', self.mouse_entered)
+        # master.bind('<Motion>', self.mouse_entered)
 
     def resize_window_back(self):
         self.block_resizing = False
@@ -92,12 +94,12 @@ class GuiManager:
                              + str(y))
         self.master.update_idletasks()
 
-    def mouse_entered(self, event):
-        self.resize_y_of_window(event.y - 15)
-        if not self.block_resizing:
-            self.block_resizing = True
-            self.master.after(self.config.hide_timeout,
-                              self.resize_window_back)
+    # def mouse_entered(self, event):
+    #     self.resize_y_of_window(event.y - 15)
+    #     if not self.block_resizing:
+    #         self.block_resizing = True
+    #         self.master.after(self.config.hide_timeout,
+    #                           self.resize_window_back)
 
     def reconfigure_text_on_buttons(
         self,
@@ -106,9 +108,7 @@ class GuiManager:
         lang,
         ):
         for row_index in range(1, config.getNumOfRows() + 1):
-            configured_buttons = dict((k, v) for (k, v) in
-                    config.key_pos_to_index.items() if k[0]
-                    == row_index)
+            configured_buttons = dict((k, v) for (k, v) in config.key_pos_to_index.items() if k[0] == row_index)
             for configured_button_pos in configured_buttons:
                 key_index = configured_buttons[configured_button_pos]
                 self.gui_all_buttons[key_index]['font'] = \

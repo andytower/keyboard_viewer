@@ -132,7 +132,7 @@ class ConfigManager():
             from os.path import expanduser
             home = expanduser("~")
             filename=filename.replace("~",home)
-        with open(filename) as f:
+        with open(filename,'r',-1,'utf-8','ignore') as f:
             lines=f.readlines()
         lines=lines[1:]
 

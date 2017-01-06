@@ -1,1 +1,1 @@
-python ./MainProgram.py &
+python ./MainProgram.py & exit

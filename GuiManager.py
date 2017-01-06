@@ -15,8 +15,8 @@ class GuiManager:
         self,
         master,
         config,
-        queue,
         keyTrainer,
+        currentLang
         ):
         self.master = master
 
@@ -26,8 +26,7 @@ class GuiManager:
 
         self.shift_key_codes = config.shift_keys
         self.config = config
-        self.queue = queue
-        self.currentLang = 1
+        self.currentLang = currentLang
         self.keyTrainer = keyTrainer
         self.block_resizing = False
 
@@ -36,12 +35,9 @@ class GuiManager:
         self.gui_row_buttons = dict()
         self.sticky_key_behaviour = self.config.sticky_key_behaviour
 
-        # self.last_sticky_button=self.config.index_to_key_name_dict.keys()[0]
-
         self.buttonFont = font.Font(family=config.font_name,
                                     size=config.font_size)
-        self.boldUnderscoredButtonFont = \
-            font.Font(family=config.font_name, size=config.font_size,
+        self.boldUnderscoredButtonFont = font.Font(family=config.font_name, size=config.font_size,
                       weight='bold', underline=1)
 
         for row_index in range(1, config.getNumOfRows() + 1):
@@ -64,7 +60,7 @@ class GuiManager:
 
             self.gui_rows[int(row_index)].pack()
         self.reconfigure_text_on_buttons(config, shift_pressed=0,
-                lang=1)
+                lang=self.currentLang)
 
         if len(self.config.colored_keys) != 0:
             for button_index in self.config.colored_keys:
@@ -74,8 +70,6 @@ class GuiManager:
         master.update_idletasks()
 
         self.default_geometry = self.parse_geometry(master.geometry())
-        # master.bind('<Enter>', self.mouse_entered)
-        # master.bind('<Motion>', self.mouse_entered)
 
     def resize_window_back(self):
         self.block_resizing = False
@@ -88,18 +82,13 @@ class GuiManager:
         return window_size
 
     def resize_y_of_window(self, y):
+        y = 0
         if y < 0:
             y = 0
         self.master.geometry(str(self.default_geometry[0]) + 'x'
                              + str(y))
         self.master.update_idletasks()
 
-    # def mouse_entered(self, event):
-    #     self.resize_y_of_window(event.y - 15)
-    #     if not self.block_resizing:
-    #         self.block_resizing = True
-    #         self.master.after(self.config.hide_timeout,
-    #                           self.resize_window_back)
 
     def reconfigure_text_on_buttons(
         self,
@@ -119,31 +108,6 @@ class GuiManager:
             if key_index in self.gui_all_buttons:
                 self.gui_all_buttons[key_index]['font'] = \
                     self.boldUnderscoredButtonFont
-
-    def processQueue(self):
-        while not self.queue.empty():
-            msg = self.queue.get(0)
-            if msg[0] == -1:  # -1 message is for changing language
-                self.currentLang = int(msg[1])
-                if self.config.debug:
-                    print('Changed lang!')
-                self.reconfigure_text_on_buttons(self.config, 0, msg[1])
-
-            if msg[0] in self.gui_all_buttons:
-                if msg[0] in self.shift_key_codes:
-                    self.reconfigure_text_on_buttons(self.config,
-                            msg[1], self.currentLang)
-                if msg[1] == 1:
-                    self.gui_all_buttons[msg[0]].config(relief=SUNKEN)
-                    if self.sticky_key_behaviour:
-                        if self.last_sticky_button != msg[0]:
-                            self.gui_all_buttons[self.last_sticky_button].config(relief=RAISED)
-                        self.last_sticky_button = msg[0]
-                else:
-                    if not self.sticky_key_behaviour:
-                        self.gui_all_buttons[msg[0]].config(relief=RAISED)
-            if self.config.debug:
-                print(msg)
 
     def start(self):
         self.mainloop()

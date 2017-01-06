@@ -10,11 +10,10 @@ class ConfigManager():
     def __init__(self):
 
         filename=os.getcwd()+'\\'+'program.conf'
-        ##home = os.path.expanduser("~")
         if not os.path.isfile(filename):
             print('Не найден '+os.getcwd()+filename)
         self._readProgConfigFromFile(filename)
-        self.numOfLangs=2#len(self.index_to_key_name_dict[self.index_to_key_name_dict.keys()[0]])/2
+        self.numOfLangs=2
 
     def _readProgConfigFromFile(self,path_to_file):
         myParser=RawConfigParser(allow_no_value=True)

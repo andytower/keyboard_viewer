@@ -8,41 +8,37 @@ from ConfigManager import ConfigManager
 from GuiManager import GuiManager
 from KeyboardStatus import keyboardStatus
 from tkinter import Tk
+from tkinter import Toplevel
 
 
 class ThreadedClient:
+    english = Tk()
+    russian = Toplevel(english)
 
-    def __init__(self, master):
-        self.master = master
-
-        master.attributes('-alpha', 0.5)
+    def __init__(self):
+        self.russian.attributes('-alpha', 0.5)
+        self.english.attributes('-alpha', 0.5)
 
         self.config = ConfigManager()
         self.keyTrainer = keyboardStatus(self.config)
         keyTrainer = self.keyTrainer
 
-        master.protocol('WM_DELETE_WINDOW', self.kill_and_destroy)
+        self.russian.protocol('WM_DELETE_WINDOW', self.kill_and_destroy)
+        self.english.protocol('WM_DELETE_WINDOW', self.kill_and_destroy)
 
-        self.guiManager = GuiManager(master, self.config,
-                keyTrainer.myQueue, keyTrainer)
+        self.guiManager = GuiManager(self.english, self.config,
+                                     self.keyTrainer, 0)
+        self.guiManager2 = GuiManager(self.russian, self.config,
+                                      self.keyTrainer, 1)
 
+        print(self.english.winfo_screenheight())
         self.running = 1
-        self.periodicCall()
-        master.mainloop()
+        self.english.mainloop()
 
     def kill_and_destroy(self):
-
         self.running = 0
-        self.master.destroy()
-
-    def periodicCall(self):
-        self.guiManager.processQueue()
-        if not self.running:
-            self.kill_and_destroy()
-        self.master.after(20, self.periodicCall)
-
+        self.russian.destroy()
+        self.english.destroy()
 
 if __name__ == '__main__':
-    root = Tk()
-
-    app = ThreadedClient(root)
+    app = ThreadedClient()
